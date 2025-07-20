@@ -68,3 +68,44 @@ Follow these instructions to get a copy of the project up and running on your lo
 - **/prisma:** Contains the database schema (`schema.prisma`) and migration files.
 - **/components:** Shared React components used across the application.
 - **/lib:** Helper functions, utility code, and library configurations.
+
+## 🗺️ Development Milestones
+
+This project is being built iteratively. Here is the roadmap:
+
+-   [x] **Milestone 1: Project Setup**
+    -   [x] Initialize Next.js project with TypeScript & Tailwind CSS
+    -   [x] Set up PostgreSQL and connect via Prisma
+    -   [x] Define initial `User` schema and run first migration
+
+-   [ ] **Milestone 2: Auth System (JWT)**
+    -   [ ] User registration and login API routes
+    -   [ ] Password hashing (`bcrypt`)
+    -   [ ] JWT generation and validation
+    -   [ ] Protected routes middleware
+    -   [ ] Frontend login/register forms
+
+-   [ ] **Milestone 3: User Roles & Profiles**
+    -   [ ] Role-based access control (Student, Tutor, Admin)
+    -   [ ] `TutorProfile` model and relationship
+    -   [ ] Students can view their dashboard
+    -   [ ] Tutors can create and edit their public profile
+
+-   [ ] **Milestone 4: Core Features**
+    -   [ ] Tutor search and filtering
+    -   [ ] Session booking system (request/approve/reject)
+    -   [ ] Basic messaging system between users
+
+-   [ ] **Milestone 5: Admin Panel**
+    -   [ ] Dashboard to view all users and sessions
+    -   [ ] Interface for approving/rejecting tutor applications
+    -   [ ] Content moderation tools
+
+-   [ ] **Milestone 6: Reviews & Ratings**
+    -   [ ] Students can leave reviews after a completed session
+    -   [ ] Ratings are displayed on tutor profiles
+
+-   [ ] **Milestone 7: Final Touches & Deployment**
+    -   [ ] UI polish and mobile responsiveness
+    -   [ ] User notifications (in-app or email)
+    -   [ ] Deployment to a cloud platform (e.g., Vercel, Railway)
