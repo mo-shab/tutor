@@ -11,6 +11,7 @@ import userRoutes from './routes/userRoutes';
 import profileRoutes from './routes/profileRoutes';
 import sessionRoutes from './routes/sessionRoutes';
 import messageRoutes from './routes/messageRoutes';
+import adminRoutes from './routes/adminRoutes';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/api', userRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => { // Use server.listen instead of app.listen

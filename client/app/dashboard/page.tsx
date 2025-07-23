@@ -3,10 +3,12 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import LogoutButton from '@/components/LogoutButton';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Shield } from 'lucide-react';
 
 // Import the role-specific dashboard components
 import StudentDashboard from '@/components/dashboards/StudentDashboard';
@@ -37,8 +39,24 @@ export default function DashboardPage() {
         return <StudentDashboard />;
       case 'TUTOR':
         return <TutorDashboard />;
-      // case 'ADMIN':
-      //   return <AdminDashboard />;
+      case 'ADMIN':
+        // For admins, we can show a simple message or a dedicated admin dashboard component
+        return (
+            <Card className="bg-red-50 border-red-200">
+                <CardHeader>
+                    <CardTitle>Admin Access</CardTitle>
+                    <CardDescription>You have administrative privileges. Use the button below to access the admin panel.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Link href="/admin/tutor-approvals" passHref>
+                        <Button variant="destructive">
+                            <Shield className="mr-2 h-4 w-4" />
+                            Go to Admin Panel
+                        </Button>
+                    </Link>
+                </CardContent>
+            </Card>
+        );
       default:
         return <p>Your dashboard is not available yet.</p>;
     }
@@ -60,7 +78,6 @@ export default function DashboardPage() {
         </header>
 
         <main>
-          {/* The role-specific dashboard component is rendered here */}
           {renderDashboard()}
         </main>
       </div>
