@@ -2,31 +2,45 @@
 
 A modern, user-friendly web platform designed to connect students with qualified tutors. This platform simplifies session booking, progress tracking, and communication, creating a seamless learning experience.
 
-## ✨ Features
+## 🏛️ Project Architecture
 
-- **For Students:** Discover, filter, and book sessions with tutors. Manage schedules, communicate securely, and track learning history.
-- **For Tutors:** Create detailed profiles, manage availability and bookings, chat with students, and monitor earnings.
-- **For Admins:** A full-featured dashboard to manage users, approve tutors, moderate content, and view platform analytics.
+This project uses a **decoupled architecture**:
+
+-   **/client**: A **Next.js** application that serves as the frontend user interface.
+-   **/server**: A **Node.js + Express.js** application that provides a backend REST API.
+
+This setup allows for independent development, scaling, and deployment of the frontend and backend.
 
 ## 🚀 Tech Stack
 
-- **Framework:** [Next.js](https://nextjs.org/) (App Router)
-- **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Database:** [PostgreSQL](https://www.postgresql.org/)
-- **ORM:** [Prisma](https://www.prisma.io/)
-- **Authentication:** JWT (JSON Web Tokens)
+### Frontend (Client)
+
+-   **Framework:** [Next.js](https://nextjs.org/) (App Router)
+-   **Language:** [TypeScript](https://www.typescriptlang.org/)
+-   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+-   **UI Components:** [Shadcn/UI](https://ui.shadcn.com/)
+
+### Backend (Server)
+
+-   **Runtime:** [Node.js](https://nodejs.org/)
+-   **Framework:** [Express.js](https://expressjs.com/)
+-   **Language:** [TypeScript](https://www.typescriptlang.org/)
+-   **Database:** [PostgreSQL](https://www.postgresql.org/)
+-   **ORM:** [Prisma](https://www.prisma.io/)
 
 ## ⚙️ Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+Follow these instructions to get both the frontend and backend running on your local machine.
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (LTS version)
-- [PostgreSQL](https://www.postgresql.org/) or [Docker](https://www.docker.com/)
+-   [Node.js](https://nodejs.org/) (LTS version)
+-   [PostgreSQL](https://www.postgresql.org/) or [Docker](https://www.docker.com/)
+-   [Git](https://git-scm.com/)
 
-### Installation
+### Installation & Setup
+
+You will need two separate terminals to run both the client and the server simultaneously.
 
 1.  **Clone the repository:**
     ```bash
@@ -34,78 +48,87 @@ Follow these instructions to get a copy of the project up and running on your lo
     cd tutor-platform
     ```
 
-2.  **Install dependencies:**
+---
+
+#### **Terminal 1: Backend Setup (`/server`)**
+
+2.  **Navigate to the server directory and install dependencies:**
     ```bash
+    cd server
     npm install
     ```
 
 3.  **Set up environment variables:**
-    Create a `.env` file in the root of the project and add your database connection string. You can copy the example:
-    ```bash
-    cp .env.example .env
-    ```
-    Then, update the `DATABASE_URL` in your new `.env` file:
+    In the `/server` directory, create a `.env` file and add your database connection string and JWT secret.
     ```env
     DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+    JWT_SECRET="YOUR_SUPER_SECRET_AND_RANDOM_KEY"
     ```
 
 4.  **Run database migrations:**
-    This command will create the tables in your database based on the schema in `prisma/schema.prisma`.
     ```bash
     npx prisma migrate dev
     ```
 
-5.  **Start the development server:**
+5.  **Start the backend server:**
     ```bash
     npm run dev
     ```
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    The backend API will now be running on `http://localhost:8000`.
 
-## 📂 Project Structure
+---
 
-- **/app:** Contains all the frontend pages and layouts using the Next.js App Router.
-- **/app/api:** Contains all the backend API routes.
-- **/prisma:** Contains the database schema (`schema.prisma`) and migration files.
-- **/components:** Shared React components used across the application.
-- **/lib:** Helper functions, utility code, and library configurations.
+#### **Terminal 2: Frontend Setup (`/client`)**
+
+6.  **Navigate to the client directory and install dependencies:**
+    ```bash
+    cd client
+    npm install
+    ```
+
+7.  **Start the frontend development server:**
+    ```bash
+    npm run dev
+    ```
+    The frontend application will now be running on `http://localhost:3000`.
 
 ## 🗺️ Development Milestones
 
-This project is being built iteratively. Here is the roadmap:
-
 -   [x] **Milestone 1: Project Setup**
-    -   [x] Initialize Next.js project with TypeScript & Tailwind CSS
-    -   [x] Set up PostgreSQL and connect via Prisma
+    -   [x] Restructure project into Client/Server monorepo
+    -   [x] Initialize Next.js client
+    -   [x] Initialize Node.js/Express server
+    -   [x] Set up PostgreSQL and connect via Prisma on the server
     -   [x] Define initial `User` schema and run first migration
 
--   [ ] **Milestone 2: Auth System (JWT)**
-    -   [ ] User registration and login API routes
-    -   [ ] Password hashing (`bcrypt`)
-    -   [ ] JWT generation and validation
-    -   [ ] Protected routes middleware
-    -   [ ] Frontend login/register forms
+-   [x] **Milestone 2: Auth System (JWT)**
+    -   [x] **Backend:** User registration, login, and logout routes
+    -   [x] **Backend:** JWTs sent via secure, HTTP-Only cookies
+    -   [x] **Backend:** Authentication middleware and protected `/users/me` route
+    -   [x] **Frontend:** Modern Login and Registration pages
+    -   [x] **Frontend:** Global `AuthContext` to manage user state
+    -   [x] **Frontend:** Protected dashboard page for authenticated users
 
 -   [ ] **Milestone 3: User Roles & Profiles**
-    -   [ ] Role-based access control (Student, Tutor, Admin)
-    -   [ ] `TutorProfile` model and relationship
-    -   [ ] Students can view their dashboard
-    -   [ ] Tutors can create and edit their public profile
+    -   [ ] **Backend:** API endpoints for managing profiles
+    -   [ ] **Frontend:** Student dashboard view
+    -   [ ] **Frontend:** Tutor profile creation and editing pages
 
 -   [ ] **Milestone 4: Core Features**
-    -   [ ] Tutor search and filtering
-    -   [ ] Session booking system (request/approve/reject)
-    -   [ ] Basic messaging system between users
+    -   [ ] **Backend:** API endpoints for search and booking
+    -   [ ] **Frontend:** Tutor search and filtering page
+    -   [ ] **Frontend:** Session booking UI
+    -   [ ] **Backend & Frontend:** Basic messaging system
 
 -   [ ] **Milestone 5: Admin Panel**
-    -   [ ] Dashboard to view all users and sessions
-    -   [ ] Interface for approving/rejecting tutor applications
-    -   [ ] Content moderation tools
+    -   [ ] **Backend:** Secure API endpoints for admin actions
+    -   [ ] **Frontend:** Admin dashboard UI for managing users and content
 
 -   [ ] **Milestone 6: Reviews & Ratings**
-    -   [ ] Students can leave reviews after a completed session
-    -   [ ] Ratings are displayed on tutor profiles
+    -   [ ] **Backend:** API endpoints for creating and fetching reviews
+    -   [ ] **Frontend:** UI for submitting and displaying reviews
 
 -   [ ] **Milestone 7: Final Touches & Deployment**
     -   [ ] UI polish and mobile responsiveness
     -   [ ] User notifications (in-app or email)
-    -   [ ] Deployment to a cloud platform (e.g., Vercel, Railway)
+    -   [ ] Deployment of server and client
