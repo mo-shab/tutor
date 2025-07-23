@@ -133,14 +133,14 @@ You will need two separate terminals to run both the client and the server simul
     -   [x] **Frontend:** Role-aware dashboard (Student & Tutor views)
     -   [x] **Frontend:** Tutor profile creation and editing page
 
--   [ ] **Milestone 4: Core Features** - **In Progress**
+-   [x] **Milestone 4: Core Features** - **Complete**
     -   [x] **Backend:** Public API endpoints to list all tutors and fetch a single tutor profile.
     -   [x] **Frontend:** "Find a Tutor" page to browse all approved tutors.
     -   [x] **Frontend:** Dynamic public profile page for individual tutors.
-    -   [ ] **Database:** Add `Session` model to schema.
-    -   [ ] **Backend:** API endpoints for booking sessions.
-    -   [ ] **Frontend:** Session booking UI.
-    -   [ ] **Backend & Frontend:** Basic messaging system.
+    -   [x] **Database:** Added `Session` model to schema.
+    -   [x] **Backend:** API endpoints for booking and managing sessions, including race condition handling.
+    -   [x] **Frontend:** Session booking UI with validation and dashboard integration for students and tutors.
+    -   [x] **Backend & Frontend:** Implemented a full real-time messaging system with unread message indicators.
 
 -   [ ] **Milestone 5: Admin Panel**
     -   [ ] **Backend:** Secure API endpoints for admin actions (e.g., user management, tutor approval).
