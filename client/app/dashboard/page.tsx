@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import LogoutButton from '@/components/LogoutButton';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Edit } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth();
@@ -37,14 +39,29 @@ export default function DashboardPage() {
             Hello, <span className="font-semibold text-indigo-600">{user.fullName}!</span>
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="p-4 border rounded-lg bg-slate-50">
             <h3 className="font-semibold">Your Profile Details:</h3>
             <ul className="mt-2 list-disc list-inside text-gray-700">
               <li><strong>Email:</strong> {user.email}</li>
-              <li><strong>Role:</strong> <span className="capitalize bg-indigo-100 text-indigo-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">{user.role.toLowerCase()}</span></li>
+              <li><strong>You are a :</strong> <span className="capitalize bg-indigo-100 text-indigo-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full">{user.role.toLowerCase()}</span></li>
             </ul>
           </div>
+          
+          {/* Conditionally render the button for Tutors */}
+          {user.role === 'TUTOR' && (
+            <div className="p-4 border-2 border-dashed rounded-lg">
+              <h3 className="text-lg font-semibold">Tutor Actions</h3>
+              <p className="text-sm text-gray-600 mb-4">Manage your public profile to attract students.</p>
+              <Link href="/tutor/profile" passHref>
+                <Button>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Your Tutor Profile
+                </Button>
+              </Link>
+            </div>
+          )}
+
           <div className="flex justify-center pt-4">
              <LogoutButton />
           </div>
