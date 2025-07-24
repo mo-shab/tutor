@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware';
-import { createSession, getSessionsForTutor, updateSessionStatus, getSessionsForStudent } from '../services/sessionService';
+import { createSession, getSessionsForTutor, updateSessionStatus, getSessionsForStudent, markSessionAsCompleted } from '../services/sessionService';
 import { SessionStatus } from '@prisma/client';
 
 export const requestSessionController = async (req: AuthRequest, res: Response) => {
@@ -38,7 +38,6 @@ export const requestSessionController = async (req: AuthRequest, res: Response) 
     }
 };
 
-// New controller for a tutor to get their sessions
 export const getTutorSessionsController = async (req: AuthRequest, res: Response) => {
     try {
         const tutorId = req.user?.userId;
@@ -96,6 +95,28 @@ export const updateSessionStatusController = async (req: AuthRequest, res: Respo
         const updatedSession = await updateSessionStatus(sessionId, tutorId, status);
         res.status(200).json(updatedSession);
 
+    } catch (error) {
+        if (error instanceof Error) {
+            return res.status(400).json({ message: error.message });
+        }
+        res.status(500).json({ message: 'An unexpected error occurred.' });
+    }
+};
+
+export const markSessionAsCompletedController = async (req: AuthRequest, res: Response) => {
+    try {
+        const tutorId = req.user?.userId;
+        const { sessionId } = req.params;
+
+        if (!tutorId) {
+            return res.status(400).json({ message: 'User ID not found in token' });
+        }
+        if (req.user?.role !== 'TUTOR') {
+            return res.status(403).json({ message: 'Forbidden: Only tutors can complete sessions.' });
+        }
+
+        const updatedSession = await markSessionAsCompleted(sessionId, tutorId);
+        res.status(200).json(updatedSession);
     } catch (error) {
         if (error instanceof Error) {
             return res.status(400).json({ message: error.message });

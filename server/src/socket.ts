@@ -1,8 +1,7 @@
 // server/src/socket.ts
 import { Server, Socket } from 'socket.io';
 
-// Export the map so it can be accessed by other services
-export const userSocketMap = new Map<string, string>(); // Map<userId, socketId>
+export const userSocketMap = new Map<string, string>();
 
 export const initializeSocketIO = (io: Server) => {
     io.on('connection', (socket: Socket) => {

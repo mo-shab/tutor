@@ -6,12 +6,24 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, UserCircle, BookOpen, MessageSquare, CalendarPlus, Languages, ArrowLeft } from 'lucide-react';
+import { Loader2, UserCircle, BookOpen, MessageSquare, CalendarPlus, Languages, ArrowLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import BookingModal from '@/components/modals/BookingModal';
-import SendMessageModal from '@/components/modals/SendMessageModal'; // Import the new modal
+import SendMessageModal from '@/components/modals/SendMessageModal';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-// Define the shape of the detailed tutor data
+// Define the shape of the review and tutor data
+interface Review {
+    id: string;
+    rating: number;
+    comment: string | null;
+    createdAt: string;
+    student: {
+        fullName: string;
+        profilePicture: string | null;
+    };
+}
+
 interface DetailedTutor {
     id: string;
     fullName: string;
@@ -23,7 +35,25 @@ interface DetailedTutor {
         hourlyRate: number | null;
         languages: string[];
     };
+    reviewsReceived: Review[];
+    reviewStats: {
+        count: number;
+        average: number;
+    };
 }
+
+// A simple component to display star ratings
+const StarDisplay = ({ rating }: { rating: number }) => (
+    <div className="flex items-center">
+        {[...Array(5)].map((_, i) => (
+            <Star
+                key={i}
+                className={`h-5 w-5 ${i < Math.round(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+            />
+        ))}
+    </div>
+);
+
 
 export default function TutorPublicProfilePage() {
     const params = useParams();
@@ -33,13 +63,14 @@ export default function TutorPublicProfilePage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [isMessageModalOpen, setIsMessageModalOpen] = useState(false); // New state for message modal
+    const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
     useEffect(() => {
         if (!tutorId) return;
 
         const fetchTutorProfile = async () => {
             try {
+                // --- THIS IS THE FIX: Changed the API endpoint to fetch the full profile ---
                 const res = await fetch(`http://localhost:8000/api/profiles/${tutorId}`);
                 if (!res.ok) {
                     throw new Error('Tutor not found.');
@@ -70,25 +101,11 @@ export default function TutorPublicProfilePage() {
 
     return (
         <>
-            {/* The Booking Modal */}
-            <BookingModal 
-                isOpen={isBookingModalOpen}
-                onClose={() => setIsBookingModalOpen(false)}
-                tutorId={tutor.id}
-                tutorName={tutor.fullName}
-            />
-
-            {/* The Send Message Modal */}
-            <SendMessageModal
-                isOpen={isMessageModalOpen}
-                onClose={() => setIsMessageModalOpen(false)}
-                tutorId={tutor.id}
-                tutorName={tutor.fullName}
-            />
+            <BookingModal isOpen={isBookingModalOpen} onClose={() => setIsBookingModalOpen(false)} tutorId={tutor.id} tutorName={tutor.fullName} />
+            <SendMessageModal isOpen={isMessageModalOpen} onClose={() => setIsMessageModalOpen(false)} tutorId={tutor.id} tutorName={tutor.fullName} />
 
             <div className="bg-gray-50 min-h-screen p-4 md:p-8">
                 <div className="container mx-auto max-w-4xl">
-                    {/* Back Button */}
                     <div className="mb-6">
                         <Link href="/find-a-tutor" passHref>
                             <Button variant="outline">
@@ -98,7 +115,7 @@ export default function TutorPublicProfilePage() {
                         </Link>
                     </div>
                     
-                    <Card className="overflow-hidden shadow-xl">
+                    <Card className="overflow-hidden shadow-xl mb-8">
                         <CardHeader className="bg-gray-100 p-8 md:flex-row flex-col flex items-start gap-8">
                             {tutor.profilePicture ? (
                                 <img src={tutor.profilePicture} alt={tutor.fullName} className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md" />
@@ -107,18 +124,20 @@ export default function TutorPublicProfilePage() {
                             )}
                             <div className="flex-grow">
                                 <h1 className="text-4xl font-bold">{tutor.fullName}</h1>
+                                {tutor.reviewStats.count > 0 && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <StarDisplay rating={tutor.reviewStats.average} />
+                                        <span className="font-semibold">{tutor.reviewStats.average}</span>
+                                        <span className="text-gray-500">({tutor.reviewStats.count} reviews)</span>
+                                    </div>
+                                )}
                                 {tutor.tutorProfile.hourlyRate && (
                                     <p className="text-2xl font-semibold text-indigo-600 mt-1">${tutor.tutorProfile.hourlyRate} / hour</p>
                                 )}
-                                <p className="text-sm text-gray-500 mt-2">Tutor since {new Date(tutor.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</p>
                             </div>
                             <div className="flex flex-col space-y-2 w-full md:w-auto mt-4 md:mt-0">
-                                <Button size="lg" className="w-full" onClick={() => setIsBookingModalOpen(true)}>
-                                    <CalendarPlus className="mr-2 h-5 w-5"/> Book a Session
-                                </Button>
-                                <Button size="lg" variant="outline" className="w-full" onClick={() => setIsMessageModalOpen(true)}>
-                                    <MessageSquare className="mr-2 h-5 w-5"/> Send Message
-                                </Button>
+                                <Button size="lg" className="w-full" onClick={() => setIsBookingModalOpen(true)}><CalendarPlus className="mr-2 h-5 w-5"/> Book a Session</Button>
+                                <Button size="lg" variant="outline" className="w-full" onClick={() => setIsMessageModalOpen(true)}><MessageSquare className="mr-2 h-5 w-5"/> Send Message</Button>
                             </div>
                         </CardHeader>
                         <CardContent className="p-8 space-y-8">
@@ -138,6 +157,37 @@ export default function TutorPublicProfilePage() {
                                     {tutor.tutorProfile.languages.map(lang => <Badge variant="outline" key={lang}>{lang}</Badge>)}
                                 </div>
                             </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Student Reviews Section */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Student Reviews ({tutor.reviewStats.count})</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {tutor.reviewsReceived.length === 0 ? (
+                                <p className="text-gray-500">This tutor has no reviews yet.</p>
+                            ) : (
+                                <ul className="space-y-6">
+                                    {tutor.reviewsReceived.map(review => (
+                                        <li key={review.id} className="flex items-start space-x-4">
+                                            <Avatar>
+                                                <AvatarImage src={review.student.profilePicture || undefined} />
+                                                <AvatarFallback>{review.student.fullName.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-grow">
+                                                <div className="flex items-center justify-between">
+                                                    <p className="font-semibold">{review.student.fullName}</p>
+                                                    <span className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                                </div>
+                                                <StarDisplay rating={review.rating} />
+                                                <p className="text-gray-700 mt-2">{review.comment}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

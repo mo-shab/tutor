@@ -38,9 +38,12 @@ model User {
   sessionsAsStudent Session[] @relation("StudentSessions")
   sessionsAsTutor   Session[] @relation("TutorSessions")
 
-  // Add relations for messaging
   conversations Conversation[]
   sentMessages  Message[]      @relation("SentMessages")
+
+  // Add relations for reviews
+  reviewsGiven  Review[] @relation("StudentReviews")
+  reviewsReceived Review[] @relation("TutorReviews")
 }
 
 model TutorProfile {
@@ -72,19 +75,17 @@ model Session {
 
   tutor   User   @relation("TutorSessions", fields: [tutorId], references: [id])
   tutorId String
-}
 
-// New Models for Messaging
+  // Add one-to-one relation to Review
+  review Review?
+}
 
 model Conversation {
   id           String    @id @default(cuid())
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   
-  // Implicit many-to-many relation with User
   participants User[]
-  
-  // One-to-many relation with Message
   messages     Message[]
 }
 
@@ -92,12 +93,31 @@ model Message {
   id        String   @id @default(cuid())
   content   String   @db.Text
   createdAt DateTime @default(now())
-  isRead    Boolean  @default(false) // Add this field
+  isRead    Boolean  @default(false)
 
-  // Relations
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId String
 
   sender   User   @relation("SentMessages", fields: [senderId], references: [id])
   senderId String
+}
+
+// New model for Reviews
+model Review {
+    id        String   @id @default(cuid())
+    rating    Int      // e.g., 1 to 5
+    comment   String?  @db.Text
+    createdAt DateTime @default(now())
+
+    // Relation to the Session
+    session   Session @relation(fields: [sessionId], references: [id])
+    sessionId String  @unique // A session can only have one review
+
+    // Relation to the Student who wrote the review
+    student   User @relation("StudentReviews", fields: [studentId], references: [id])
+    studentId String
+
+    // Relation to the Tutor who received the review
+    tutor     User @relation("TutorReviews", fields: [tutorId], references: [id])
+    tutorId   String
 }

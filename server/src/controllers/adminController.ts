@@ -8,6 +8,7 @@ import {
     setUserActiveStatus
 } from '../services/adminService';
 import { UserRole } from '@prisma/client';
+import { userSocketMap } from '../socket'; // Import the shared socket map
 
 export const listUsersController = async (req: Request, res: Response) => {
     try {
@@ -43,8 +44,6 @@ export const approveTutorController = async (req: Request, res: Response) => {
     }
 };
 
-// --- NEW CONTROLLERS FOR USER MANAGEMENT ---
-
 export const updateUserRoleController = async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
@@ -55,6 +54,13 @@ export const updateUserRoleController = async (req: Request, res: Response) => {
         }
 
         const updatedUser = await updateUserRole(userId, role);
+
+        // --- Force logout the user whose role was changed ---
+        const socketId = userSocketMap.get(userId);
+        if (socketId) {
+            req.io.to(socketId).emit('forceLogout');
+        }
+
         res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({ message: 'An unexpected error occurred' });
@@ -71,6 +77,15 @@ export const setUserStatusController = async (req: Request, res: Response) => {
         }
 
         const updatedUser = await setUserActiveStatus(userId, isActive);
+
+        // --- Force logout the user if they are being deactivated ---
+        if (!isActive) {
+            const socketId = userSocketMap.get(userId);
+            if (socketId) {
+                req.io.to(socketId).emit('forceLogout');
+            }
+        }
+
         res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({ message: 'An unexpected error occurred' });

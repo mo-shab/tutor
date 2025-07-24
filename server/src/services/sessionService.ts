@@ -88,7 +88,15 @@ export const getSessionsForStudent = async (studentId: string) => {
         where: { studentId },
         include: {
             tutor: {
-                select: { fullName: true }
+                select: {
+                    id: true, // Also include tutor's ID for the review modal
+                    fullName: true
+                }
+            },
+            review: { // Include the review relation to check if a session has been reviewed
+                select: {
+                    id: true
+                }
             }
         },
         orderBy: {
@@ -112,5 +120,29 @@ export const updateSessionStatus = async (sessionId: string, tutorId: string, ne
     return prisma.session.update({
         where: { id: sessionId },
         data: { status: newStatus },
+    });
+};
+
+export const markSessionAsCompleted = async (sessionId: string, tutorId: string) => {
+    const session = await prisma.session.findFirst({
+        where: {
+            id: sessionId,
+            tutorId: tutorId,
+        }
+    });
+
+    if (!session) {
+        throw new Error('Session not found or you do not have permission to update it.');
+    }
+    if (session.status !== 'ACCEPTED') {
+        throw new Error('Only accepted sessions can be marked as completed.');
+    }
+    if (new Date(session.scheduledAt) > new Date()) {
+        throw new Error('Cannot mark a session as completed before its scheduled time.');
+    }
+
+    return prisma.session.update({
+        where: { id: sessionId },
+        data: { status: 'COMPLETED' },
     });
 };

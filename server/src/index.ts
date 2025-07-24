@@ -12,6 +12,7 @@ import profileRoutes from './routes/profileRoutes';
 import sessionRoutes from './routes/sessionRoutes';
 import messageRoutes from './routes/messageRoutes';
 import adminRoutes from './routes/adminRoutes';
+import reviewRoutes from './routes/reviewRoutes';
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use('/api/profiles', profileRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => { // Use server.listen instead of app.listen

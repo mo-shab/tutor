@@ -85,7 +85,7 @@ export const getAllApprovedTutors = async () => {
 };
 
 export const getPublicTutorProfileById = async (userId: string) => {
-    return prisma.user.findFirst({
+    const tutor = await prisma.user.findFirst({
         where: {
             id: userId,
             role: 'TUTOR',
@@ -95,7 +95,7 @@ export const getPublicTutorProfileById = async (userId: string) => {
             id: true,
             fullName: true,
             profilePicture: true,
-            createdAt: true, // e.g., to show "Tutor since..."
+            createdAt: true,
             tutorProfile: {
                 select: {
                     bio: true,
@@ -103,7 +103,43 @@ export const getPublicTutorProfileById = async (userId: string) => {
                     hourlyRate: true,
                     languages: true,
                 }
+            },
+            // Include the reviews received by the tutor
+            reviewsReceived: {
+                select: {
+                    id: true,
+                    rating: true,
+                    comment: true,
+                    createdAt: true,
+                    student: {
+                        select: {
+                            fullName: true,
+                            profilePicture: true,
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                }
             }
         }
     });
+
+    if (!tutor) return null;
+
+    // Calculate average rating and review count
+    const reviewCount = tutor.reviewsReceived.length;
+    const averageRating = reviewCount > 0 
+        ? tutor.reviewsReceived.reduce((acc, review) => acc + review.rating, 0) / reviewCount 
+        : 0;
+
+    return {
+        ...tutor,
+        reviewStats: {
+            count: reviewCount,
+            average: parseFloat(averageRating.toFixed(1))
+        }
+    };
 };
+
+
